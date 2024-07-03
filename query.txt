@@ -1,0 +1,133 @@
+query {
+  games {
+    id
+    title
+    platform
+    reviews {
+      id
+      rating
+      content
+      author {
+        id
+        name
+        verified
+      }
+    }
+  }
+}
+
+query {
+  game(id: "1") {
+    id
+    title
+    platform
+    reviews {
+      id
+      rating
+      content
+      author {
+        id
+        name
+        verified
+      }
+    }
+  }
+}
+
+
+query {
+  reviews {
+    id
+    rating
+    content
+    game {
+      id
+      title
+      platform
+    }
+    author {
+      id
+      name
+      verified
+    }
+  }
+}
+
+
+query {
+  review(id: "1") {
+    id
+    rating
+    content
+    game {
+      id
+      title
+      platform
+    }
+    author {
+      id
+      name
+      verified
+    }
+  }
+}
+
+query {
+  authors {
+    id
+    name
+    verified
+    reviews {
+      id
+      rating
+      content
+      game {
+        id
+        title
+        platform
+      }
+    }
+  }
+}
+
+query {
+  author(id: "1") {
+    id
+    name
+    verified
+    reviews {
+      id
+      rating
+      content
+      game {
+        id
+        title
+        platform
+      }
+    }
+  }
+}
+
+mutation {
+  addGame(game: { title: "New Game", platform: ["PS5", "Xbox"] }) {
+    id
+    title
+    platform
+  }
+}
+
+mutation {
+  updateGame(id: "1", edits: { title: "Updated Title", platform: ["Switch"] }) {
+    id
+    title
+    platform
+  }
+}
+
+mutation {
+  deleteGame(id: "1") {
+    id
+    title
+    platform
+  }
+}

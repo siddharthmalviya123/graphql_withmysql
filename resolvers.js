@@ -1,4 +1,4 @@
-// resolvers.js
+
 const resolvers = {
     Query: {
 
@@ -16,10 +16,10 @@ const resolvers = {
         const [rows] = await pool.query('SELECT * FROM games WHERE id = ?', [id]);
         if (rows.length > 0) {
           const game = rows[0];
-          game.platform = game.platform.split(',').map(p => p.trim()); // Adjust platform format if needed
+          game.platform = game.platform.split(',').map(p => p.trim()); 
           return game;
         }
-        return null; // Handle case where game with given id is not found
+        return null; 
       },
       reviews: async (_, __, { pool }) => {
         try {
@@ -53,13 +53,12 @@ const resolvers = {
           throw new Error(`Failed to fetch author with id ${id}: ${err.message}`);
         }
       }
-      // Add other queries similarly
+
     },
 
     Mutation: {
         addGame: async (_, { game }, { pool }) => {
             const { title, platform } = game;
-            // Format the platforms into a comma-separated string
             const platformStr = platform.join(', ');
             try {
               const [result] = await pool.query('INSERT INTO games (title, platform) VALUES (?, ?)', [title, platformStr]);
@@ -83,12 +82,38 @@ const resolvers = {
         const [rows] = await pool.query('SELECT * FROM games WHERE id = ?', [id]);
         if (rows.length > 0) {
           const game = rows[0];
-          game.platform = game.platform.split(',').map(p => p.trim()); // Adjust platform format if needed
+          game.platform = game.platform.split(',').map(p => p.trim()); 
           return game;
         }
-        return null; // Handle case where game with given id is not found
+        return null; 
       },
-      // Add other mutations similarly
+
+      addReview: async (_, { rating, content, author_id, game_id }, { pool }) => {
+        try {
+          const [gameExists] = await pool.query('SELECT id FROM games WHERE id = ?', [game_id]);
+          if (gameExists.length === 0) {
+            throw new Error(`Game with id ${game_id} does not exist`);
+          }
+          const [authorExists] = await pool.query('SELECT id FROM authors WHERE id = ?', [author_id]);
+          if (authorExists.length === 0) {
+            throw new Error(`Author with id ${author_id} does not exist`);
+          }
+  
+        
+          const [result] = await pool.query('INSERT INTO reviews (rating, content, author_id, game_id) VALUES (?, ?, ?, ?)', [rating, content, author_id, game_id]);
+          const insertedReviewId = result.insertId;
+  
+          if (!insertedReviewId) {
+            throw new Error('Failed to insert review');
+          }
+  
+          const [insertedReview] = await pool.query('SELECT * FROM reviews WHERE id = ?', [insertedReviewId]);
+  
+          return insertedReview[0]; 
+        } catch (error) {
+          throw new Error(`Failed to add review: ${error.message}`);
+        }
+      }
     },
     Game: {
       reviews: async (parent, _, { pool }) => {
@@ -99,10 +124,9 @@ const resolvers = {
         try {
           const [rows] = await pool.query('SELECT platform FROM games WHERE id = ?', [parent.id]);
           if (rows.length > 0) {
-            // Assuming 'platform' is stored as a comma-separated string in the database
             return rows[0].platform.split(',').map(p => p.trim());
           }
-          return []; // Return an empty array if no platform data is found
+          return []; 
         } catch (error) {
           throw new Error(`Failed to fetch platform for game ${parent.id}: ${error.message}`);
         }
@@ -112,11 +136,11 @@ const resolvers = {
       Review: {
         author: async (parent, _, { pool }) => {
           const [rows] = await pool.query('SELECT * FROM authors WHERE id = ?', [parent.author_id]);
-          return rows[0]; // Assuming there's only one author with a given ID (which should be the case)
+          return rows[0]; 
         },
         game: async (parent, _, { pool }) => {
           const [rows] = await pool.query('SELECT * FROM games WHERE id = ?', [parent.game_id]);
-          return rows[0]; // Assuming there's only one game with a given ID (which should be the case)
+          return rows[0];
         },
       },
       Author: {
@@ -124,9 +148,9 @@ const resolvers = {
           const [rows] = await pool.query('SELECT * FROM reviews WHERE author_id = ?', [parent.id]);
           return rows;
         },
-        // Add other nested resolvers similarly
+       
       },
-    // Define other type resolvers (Review, Author) similarly
+
   };
   
   export default resolvers;

@@ -9,6 +9,8 @@ export const typeDefs = `#graphql
     id: ID!
     rating: Int!
     content: String!
+    author_id: ID!
+   game_id: ID!
     game: Game!
     author : Author!
   }
@@ -30,6 +32,8 @@ export const typeDefs = `#graphql
     addGame(game :AddGameInput): Game
     deleteGame(id :ID!):[Game]
     updateGame(id:ID! , edits:EditGameInput!):Game
+    addReview(rating: Int!, content: String!, author_id: ID!, game_id: ID!): Review
+
     }
     input AddGameInput{
     title :String!,
@@ -41,5 +45,3 @@ export const typeDefs = `#graphql
     platform :[String!]
     }
 `
-//game //review //author
-//int ,floats , strings, boolean , ID(key)
